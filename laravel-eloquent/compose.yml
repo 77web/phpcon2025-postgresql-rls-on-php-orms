@@ -1,0 +1,46 @@
+services:
+  app:
+    container_name: rls-eloquent-app
+    build:
+      context: ./
+      dockerfile: ../Dockerfile
+    ports:
+      - 80:80
+    volumes:
+      - ./:/var/www/html
+    env_file:
+      - .env
+    depends_on:
+      - pgsql
+    environment:
+      TZ: Asia/Tokyo
+  pgsql:
+    image: postgres:15.13-alpine
+    container_name: rls-eloquent-db
+    ports:
+      - 5432:5432
+    environment:
+      TZ: Asia/Tokyo
+      POSTGRES_DB: eloquent_test
+      POSTGRES_USER: eloquent
+      POSTGRES_PASSWORD: eloquent
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
+  pgsql_test:
+    image: postgres:15.13-alpine
+    container_name: rls-eloquent-db-test
+    ports:
+      - 5433:5432
+    environment:
+      TZ: Asia/Tokyo
+      POSTGRES_DB: eloquent_test
+      POSTGRES_USER: eloquent
+      POSTGRES_PASSWORD: eloquent
+      POSTGRES_INITDB_ARGS: --encoding=UTF-8 --locale=C
+  redis:
+    image: redis:6.2-alpine
+    container_name: rls-eloquent-redis
+    command: redis-server --appendonly yes
+    ports:
+      - 6379:6379
+    environment:
+      TZ: Asia/Tokyo

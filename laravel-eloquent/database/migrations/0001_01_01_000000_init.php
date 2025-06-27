@@ -25,7 +25,7 @@ return new class extends Migration
             }
         }
         
-        $sqls = file_get_contents(__DIR__.'/init.sql');
+        $sqls = file_get_contents(__DIR__.'/../../../docker/init.sql');
         array_map(function ($sql) {
             $sql = trim(str_replace(PHP_EOL, '', $sql));
             if ($sql === '') {

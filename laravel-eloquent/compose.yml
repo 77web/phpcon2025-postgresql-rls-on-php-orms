@@ -2,12 +2,13 @@ services:
   app:
     container_name: rls-eloquent-app
     build:
-      context: ./
-      dockerfile: ../Dockerfile
+      context: ../
+      dockerfile: ./Dockerfile
     ports:
       - 80:80
     volumes:
       - ./:/var/www/html
+      - ../docker:/var/www/docker
     env_file:
       - .env
     depends_on:

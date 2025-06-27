@@ -13,16 +13,24 @@ return new class extends Migration
     public function up(): void
     {
         // RLS用のロールがあれば削除
-        $r = DB::select('SELECT * FROM pg_roles WHERE rolname = \'tenant\'');
-        if (count($r) > 0) {
+        $roles = DB::select('SELECT * FROM pg_roles WHERE rolname = \'tenant\'');
+        if (count($roles) > 0) {
             DB::statement('REVOKE ALL ON ALL TABLES IN SCHEMA public FROM tenant');
             DB::statement('REVOKE ALL ON ALL SEQUENCES IN SCHEMA public FROM tenant');
             DB::statement('REVOKE USAGE ON SCHEMA public FROM tenant');
             DB::statement('DROP ROLE tenant');
+            $tenantRoles = DB::select('SELECT * FROM pg_roles WHERE rolname like \'%@%\'');
+            foreach ($tenantRoles as $role) {
+                DB::statement(sprintf('DROP ROLE "%s"', $role->rolname));
+            }
         }
         
-        $sqls = file_get_contents('init.sql');
+        $sqls = file_get_contents(__DIR__.'/init.sql');
         array_map(function ($sql) {
+            $sql = trim(str_replace(PHP_EOL, '', $sql));
+            if ($sql === '') {
+                return;
+            }
             DB::statement($sql);
         }, explode(';', $sqls));
     }

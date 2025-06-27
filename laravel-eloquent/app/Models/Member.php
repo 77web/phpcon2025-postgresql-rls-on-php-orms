@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 
 /**
  * @property string $name
+ * @property int $user_id
  * @property-read User $user
  */
 class Member extends Model
